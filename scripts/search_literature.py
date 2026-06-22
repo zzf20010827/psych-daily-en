@@ -355,7 +355,7 @@ def search_all(config: dict[str, Any]) -> tuple[list[Paper], SearchStats]:
             topic_papers.extend(search_semantic_scholar(query, name))
         stats.topic_hits[name] = len(topic_papers)
         all_papers.extend(topic_papers)
-        time.sleep(1.0)
+        time.sleep(0.34)
     stats.total_raw = len(all_papers)
     all_papers = dedupe_papers(all_papers)
     all_papers = sort_papers(all_papers)[:max_papers]

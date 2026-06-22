@@ -147,15 +147,18 @@ def api_send():
 
     with _lock:
         cfg = _load_config()
-        cfg.setdefault("search", {})["days_back"] = days_back
-        cfg.setdefault("search", {})["max_papers"] = max_papers
-        papers, stats = sl.search_all(cfg)
-        manual = sl.load_manual_papers(str(DATA_DIR / "manual_papers.json"))
-        if manual:
-            papers = sl.sort_papers(papers + manual)[:max_papers]
-        history = _load_history()
-        keys = {h["key"] for h in history if "key" in h}
-        papers, skipped = sl.filter_history(papers, keys)
+        if is_test:
+            papers, stats, skipped = [], type("Stats", (), {"topic_hits": {}})(), 0
+        else:
+            cfg.setdefault("search", {})["days_back"] = days_back
+            cfg.setdefault("search", {})["max_papers"] = max_papers
+            papers, stats = sl.search_all(cfg)
+            manual = sl.load_manual_papers(str(DATA_DIR / "manual_papers.json"))
+            if manual:
+                papers = sl.sort_papers(papers + manual)[:max_papers]
+            history = _load_history()
+            keys = {h["key"] for h in history if "key" in h}
+            papers, skipped = sl.filter_history(papers, keys)
 
         if not papers and not is_test:
             return jsonify({"error": "No new papers to send. Use test=true to send a test email."}), 400
@@ -243,6 +246,22 @@ def api_activity():
     history = _load_history()
     recent = history[-20:] if len(history) > 20 else history
     return jsonify([{"key": h["key"], "title": h["title"], "sent_at": h["sent_at"]} for h in reversed(recent)])
+
+
+@app.route("/api/debug")
+def api_debug():
+    cfg = _load_config()
+    smtp = cfg.get("smtp", {})
+    return jsonify({
+        "has_sender": bool(smtp.get("sender")),
+        "has_auth_code": bool(smtp.get("auth_code")),
+        "has_recipient": bool(smtp.get("recipient")),
+        "sender_env": bool(os.environ.get("SMTP_SENDER")),
+        "auth_code_env": bool(os.environ.get("SMTP_AUTH_CODE")),
+        "recipient_env": bool(os.environ.get("SMTP_RECIPIENT")),
+        "sender_val": smtp.get("sender", ""),
+        "auth_code_len": len(smtp.get("auth_code", "")),
+    })
 
 
 # ── Run ──────────────────────────────────────────────────────────────
