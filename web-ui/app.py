@@ -22,6 +22,7 @@ import format_digest as fd
 app = Flask(__name__, static_folder=".", static_url_path="")
 _lock = Lock()
 PUBLISHED_FILE = DATA_DIR / "published.html"
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 # ── helpers ──────────────────────────────────────────────────────────
 

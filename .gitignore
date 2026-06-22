@@ -1,4 +1,3 @@
 scripts/__pycache__/
-data/*.json
 *.pyc
 __pycache__/
