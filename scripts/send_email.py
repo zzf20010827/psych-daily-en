@@ -10,7 +10,7 @@ from email.utils import formataddr
 from typing import Any
 
 
-def send_qq_email(config: dict[str, Any], subject: str, html_body: str, plain_body: str) -> None:
+def send_qq_email(config: dict[str, Any], subject: str, html_body: str, plain_body: str, timeout: int = 15) -> None:
     smtp_cfg = config.get("smtp", {})
     email_cfg = config.get("email", {})
     sender = smtp_cfg.get("sender", "")
@@ -28,6 +28,15 @@ def send_qq_email(config: dict[str, Any], subject: str, html_body: str, plain_bo
     msg.attach(MIMEText(plain_body or "Use an HTML-compatible client.", "plain", "utf-8"))
     msg.attach(MIMEText(html_body, "html", "utf-8"))
     ctx = ssl.create_default_context()
-    with smtplib.SMTP_SSL(host, port, context=ctx) as s:
-        s.login(sender, auth_code)
-        s.sendmail(sender, [recipient], msg.as_string())
+    try:
+        with smtplib.SMTP_SSL(host, port, context=ctx, timeout=timeout) as s:
+            s.login(sender, auth_code)
+            s.sendmail(sender, [recipient], msg.as_string())
+    except Exception:
+        if port == 465:
+            with smtplib.SMTP(host, 587, timeout=timeout) as s:
+                s.starttls(context=ctx)
+                s.login(sender, auth_code)
+                s.sendmail(sender, [recipient], msg.as_string())
+        else:
+            raise
