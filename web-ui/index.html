@@ -175,6 +175,23 @@ tbody tr:hover { background:#f8f9fc; }
 .empty-state { text-align:center; padding:40px 20px; color:var(--text-secondary); }
 .empty-state .icon { font-size:40px; margin-bottom:12px; opacity:.3; }
 .empty-state p { font-size:13px; }
+.paper-item { padding:12px 0; border-bottom:1px solid var(--border); }
+.paper-item:last-child { border-bottom:none; }
+.paper-topic { font-size:11px; color:var(--primary); font-weight:500; margin-bottom:4px; }
+.paper-title { font-size:14px; font-weight:500; line-height:1.5; }
+.paper-title a { color:var(--text); text-decoration:none; }
+.paper-title a:hover { color:var(--primary); text-decoration:underline; }
+.paper-meta { font-size:12px; color:var(--text-secondary); margin-top:3px; }
+.paper-abstract { font-size:12px; color:var(--text-secondary); margin-top:6px; line-height:1.5; max-height:60px; overflow:hidden; }
+.activity-item { display:flex; justify-content:space-between; align-items:flex-start; padding:10px 0; border-bottom:1px solid var(--border); font-size:13px; gap:12px; }
+.activity-item:last-child { border-bottom:none; }
+.activity-item strong { flex:1; }
+.activity-item .time { white-space:nowrap; color:var(--text-secondary); font-size:11px; }
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:1000; justify-content:center; align-items:center; }
+.modal-overlay.show { display:flex; }
+.modal-box { background:var(--card-bg); border-radius:var(--radius); padding:24px; max-width:400px; width:90%; box-shadow:0 4px 20px rgba(0,0,0,.15); }
+.modal-box h3 { margin-bottom:12px; }
+.modal-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:20px; }
 
 /* Responsive */
 @media (max-width:768px) {
@@ -218,9 +235,9 @@ tbody tr:hover { background:#f8f9fc; }
   </div>
   <nav>
     <div class="nav-item active" data-page="dashboard"><span class="icon">&#9632;</span><span data-i18n="navDashboard">Dashboard</span></div>
-    <div class="nav-item" data-page="search"><span class="icon">&#9740;</span><span data-i18n="navSearch">Search &amp; Send</span></div>
+    <div class="nav-item" data-page="search"><span class="icon">&#9740;</span><span data-i18n="navSearch">Search &amp; Publish</span></div>
     <div class="nav-item" data-page="config"><span class="icon">&#9881;</span><span data-i18n="navConfig">Configuration</span></div>
-    <div class="nav-item" data-page="history"><span class="icon">&#9776;</span><span data-i18n="navHistory">Send History</span></div>
+    <div class="nav-item" data-page="history"><span class="icon">&#9776;</span><span data-i18n="navHistory">Publish History</span></div>
     <div class="nav-item" data-page="import"><span class="icon">&#43;</span><span data-i18n="navImport">Manual Import</span></div>
     <div class="nav-item" data-page="about"><span class="icon">&#9432;</span><span data-i18n="navAbout">About</span></div>
   </nav>
@@ -243,8 +260,8 @@ tbody tr:hover { background:#f8f9fc; }
     <!-- ======== DASHBOARD ======== -->
     <div class="page active" id="page-dashboard">
       <div class="stats-grid">
-        <div class="stat-card"><div class="label" data-i18n="statToday">Papers Sent Today</div><div class="value" id="statToday">0</div><div class="sub" id="statTodaySub" data-i18n="lastSend">Last send: --</div></div>
-        <div class="stat-card"><div class="label" data-i18n="statWeek">Total Sent (7d)</div><div class="value" id="statWeek">10</div><div class="sub trend-up" data-i18n="statWeekSub">&#8593; +10 this week</div></div>
+        <div class="stat-card"><div class="label" data-i18n="statToday">Papers Published Today</div><div class="value" id="statToday">0</div><div class="sub" id="statTodaySub" data-i18n="lastSend">Last publish: --</div></div>
+        <div class="stat-card"><div class="label" data-i18n="statWeek">Total Published (7d)</div><div class="value" id="statWeek">10</div><div class="sub trend-up" data-i18n="statWeekSub">&#8593; +10 this week</div></div>
         <div class="stat-card"><div class="label" data-i18n="statTopics">Topics Configured</div><div class="value" id="statTopics">4</div><div class="sub" data-i18n="statTopicsSub">Active subdomains</div></div>
         <div class="stat-card"><div class="label" data-i18n="statSched">Scheduled Task</div><div class="value" id="statSched">8:00 AM</div><div class="sub" data-i18n="statSchedSub">Daily automatic</div></div>
       </div>
@@ -265,7 +282,7 @@ tbody tr:hover { background:#f8f9fc; }
       </div>
     </div>
 
-    <!-- ======== SEARCH & SEND ======== -->
+    <!-- ======== SEARCH & PUBLISH ======== -->
     <div class="page" id="page-search">
       <div class="card">
         <div class="card-header"><h3 data-i18n="searchLit">Search Literature</h3></div>
@@ -275,9 +292,7 @@ tbody tr:hover { background:#f8f9fc; }
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button class="btn btn-primary" onclick="doSearch()">&#9740; <span data-i18n="search">Search</span></button>
-          <button class="btn" onclick="doDryRun()">&#128269; <span data-i18n="dryRun">Dry Run</span></button>
-          <button class="btn btn-success" onclick="doSend()">&#9993; <span data-i18n="sendEmail">Send Email</span></button>
-          <button class="btn btn-success" onclick="doTestSend()" style="border-color:var(--warning);color:#e5a50a;">&#9993; <span data-i18n="sendTest">Send Test</span></button>
+          <button class="btn btn-success" onclick="doPublish()">&#9654; <span data-i18n="publishNow">Publish to Homepage</span></button>
         </div>
       </div>
 
@@ -285,7 +300,7 @@ tbody tr:hover { background:#f8f9fc; }
         <div class="card-header"><h3 data-i18n="searchResults">Search Results</h3><span class="badge" id="resultCount">0 papers</span></div>
         <div id="resultsList"></div>
         <div style="margin-top:12px;display:flex;gap:8px;">
-          <button class="btn btn-success" onclick="doSend()">&#9993; <span data-i18n="sendAll">Send All</span></button>
+          <button class="btn btn-success" onclick="doPublish()">&#9654; <span data-i18n="publishAll">Publish All</span></button>
           <button class="btn" onclick="document.getElementById('resultsCard').style.display='none'" data-i18n="clear">Clear</button>
         </div>
       </div>
@@ -294,17 +309,9 @@ tbody tr:hover { background:#f8f9fc; }
     <!-- ======== CONFIGURATION ======== -->
     <div class="page" id="page-config">
       <div class="card">
-        <div class="card-header"><h3 data-i18n="smtpSettings">SMTP Settings</h3></div>
-        <div class="form-row">
-          <div class="form-group"><label data-i18n="smtpHost">SMTP Host</label><input value="smtp.qq.com" disabled></div>
-          <div class="form-group"><label data-i18n="port">Port</label><input value="465 (SSL)" disabled></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label data-i18n="senderEmail">Sender Email</label><input value="2135437119@qq.com" id="cfgSender"></div>
-          <div class="form-group"><label data-i18n="recipientEmail">Recipient Email</label><input value="2135437119@qq.com" id="cfgRecipient"></div>
-        </div>
-        <div class="form-group"><label data-i18n="senderName">Sender Display Name</label><input value="Psychology Literature Daily" id="cfgSenderName"></div>
-        <div class="form-group"><label data-i18n="authCode">Auth Code</label><input type="password" value="********" id="cfgAuthCode"></div>
+        <div class="card-header"><h3 data-i18n="publishSettings">Publishing Settings</h3></div>
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;" data-i18n="publishInfo">Papers are published to the public homepage at <a href="/" target="_blank">psych-daily-en.onrender.com</a>. Use Search &amp; Publish above to update.</p>
+        <div class="form-group"><label data-i18n="senderName">Homepage Title</label><input value="Psychology Literature Daily" id="cfgSenderName"></div>
       </div>
 
       <div class="card">
@@ -338,10 +345,10 @@ tbody tr:hover { background:#f8f9fc; }
       </div>
     </div>
 
-    <!-- ======== SEND HISTORY ======== -->
+    <!-- ======== PUBLISH HISTORY ======== -->
     <div class="page" id="page-history">
       <div class="card">
-        <div class="card-header"><h3 data-i18n="sentPapers">Sent Papers (Last 90 Days)</h3><span class="badge" id="historyCount">10 papers</span></div>
+        <div class="card-header"><h3 data-i18n="sentPapers">Published Papers (Last 90 Days)</h3><span class="badge" id="historyCount">10 papers</span></div>
         <div class="table-wrap">
           <table>
             <thead><tr><th data-i18n="thTitle">Title</th><th data-i18n="thDoi">DOI/Key</th><th data-i18n="thSent">Sent At</th></tr></thead>
@@ -389,7 +396,7 @@ tbody tr:hover { background:#f8f9fc; }
         <div class="card-header"><h3 data-i18n="manualQueue">Manual Queue</h3><span class="badge" id="manualCount">0 papers</span></div>
         <div id="manualList"><div class="empty-state"><p data-i18n="noManual">No manually added papers.</p></div></div>
         <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end;">
-          <button class="btn btn-success" onclick="doSendManual()">&#9993; <span data-i18n="sendQueue">Send Queue</span></button>
+          <button class="btn btn-success" onclick="doSendManual()">&#9654; <span data-i18n="publishQueue">Publish Queue</span></button>
           <button class="btn btn-danger" onclick="clearManual()" data-i18n="clear">Clear</button>
         </div>
       </div>
@@ -400,16 +407,15 @@ tbody tr:hover { background:#f8f9fc; }
       <div class="card">
         <div class="card-header"><h3 data-i18n="aboutTitle">About PsychLit Daily</h3></div>
         <p style="font-size:13px;line-height:1.7;color:var(--text-secondary);" data-i18n="aboutDesc1">
-          <strong>PsychLit Daily</strong> is an automated psychology literature tracking and email push system.
+          <strong>PsychLit Daily</strong> is an automated psychology literature tracking system.
           It searches PubMed and optional sources (Crossref, Semantic Scholar) across configured subdomains,
-          deduplicates against sent history, generates HTML digest emails with full abstracts and links,
-          and pushes them via QQ Mail SMTP.
+          deduplicates against published history, generates HTML digests with full abstracts and links,
+          and publishes them to the public homepage.
         </p>
         <div style="margin-top:16px;font-size:13px;line-height:2;">
           <div><strong data-i18n="version">Version:</strong> <span data-i18n="versionNum">1.0 (English Edition)</span></div>
           <div><strong data-i18n="dataSources">Data Sources:</strong> PubMed, Crossref, Semantic Scholar</div>
-          <div><strong>Email:</strong> QQ Mail SMTP (smtp.qq.com:465)</div>
-          <div><strong data-i18n="scripts">Scripts:</strong> <code>run_daily.py</code>, <code>search_literature.py</code>, <code>format_digest.py</code>, <code>send_email.py</code></div>
+          <div><strong data-i18n="scripts">Scripts:</strong> <code>run_daily.py</code>, <code>search_literature.py</code>, <code>format_digest.py</code></div>
         </div>
       </div>
     </div>
@@ -438,45 +444,44 @@ const LANG = {
   en: {
     brand: 'PsychLit Daily',
     sidebarFooter: 'v1.0 \u00b7 English Edition',
-    navDashboard: 'Dashboard', navSearch: 'Search & Send', navConfig: 'Configuration',
-    navHistory: 'Send History', navImport: 'Manual Import', navAbout: 'About',
+    navDashboard: 'Dashboard', navSearch: 'Search & Publish', navConfig: 'Configuration',
+    navHistory: 'Publish History', navImport: 'Manual Import', navAbout: 'About',
     systemReady: 'System Ready', runNow: 'Run Now',
-    statToday: 'Papers Sent Today', lastSend: 'Last send: --',
-    statWeek: 'Total Sent (7d)', statWeekSub: '\u2191 +10 this week',
+    statToday: 'Papers Published Today', lastSend: 'Last publish: --',
+    statWeek: 'Total Published (7d)', statWeekSub: '\u2191 +10 this week',
     statTopics: 'Topics Configured', statTopicsSub: 'Active subdomains',
     statSched: 'Scheduled Task', statSchedSub: 'Daily automatic',
     recentActivity: 'Recent Activity', today: 'Today',
     topicBreakdown: 'Topic Breakdown', papersToday: 'papers today',
     searchLit: 'Search Literature', daysBack: 'Days Back', maxPapers: 'Max Papers',
-    search: 'Search', dryRun: 'Dry Run', sendEmail: 'Send Email', sendTest: 'Send Test',
-    searchResults: 'Search Results', sendAll: 'Send All', clear: 'Clear',
-    smtpSettings: 'SMTP Settings', smtpHost: 'SMTP Host', port: 'Port',
-    senderEmail: 'Sender Email', recipientEmail: 'Recipient Email',
-    senderName: 'Sender Display Name', authCode: 'Auth Code',
+    search: 'Search', publishNow: 'Publish to Homepage',
+    searchResults: 'Search Results', publishAll: 'Publish All', clear: 'Clear',
+    publishSettings: 'Publishing Settings',
+    publishInfo: 'Papers are published to the public homepage. Use Search &amp; Publish above to update.',
+    senderName: 'Homepage Title',
     searchSettings: 'Search Settings', maxPerEmail: 'Max Papers per Email',
     dataSources: 'Data Sources', topics: 'Topics', addTopic: 'Add Topic',
     edit: 'Edit', delete: 'Delete', saveConfig: 'Save Configuration',
-    sentPapers: 'Sent Papers (Last 90 Days)',
-    thTitle: 'Title', thDoi: 'DOI/Key', thSent: 'Sent At',
+    sentPapers: 'Published Papers (Last 90 Days)',
+    thTitle: 'Title', thDoi: 'DOI/Key', thSent: 'Published At',
     importManual: 'Import Paper Manually', titleReq: 'Title *',
     authors: 'Authors', journal: 'Journal', date: 'Date', topic: 'Topic',
     abstract: 'Abstract', addToQueue: 'Add to Queue',
     manualQueue: 'Manual Queue', noManual: 'No manually added papers.',
-    sendQueue: 'Send Queue',
+    publishQueue: 'Publish Queue',
     aboutTitle: 'About PsychLit Daily',
-    aboutDesc1: 'PsychLit Daily is an automated psychology literature tracking and email push system. It searches PubMed and optional sources (Crossref, Semantic Scholar) across configured subdomains, deduplicates against sent history, generates HTML digest emails with full abstracts and links, and pushes them via QQ Mail SMTP.',
+    aboutDesc1: 'PsychLit Daily is an automated psychology literature tracking system. It searches PubMed and optional sources (Crossref, Semantic Scholar) across configured subdomains, deduplicates against history, and publishes an HTML digest with full abstracts and links to the public homepage.',
     version: 'Version', versionNum: '1.0 (English Edition)', scripts: 'Scripts',
     cancel: 'Cancel', confirm: 'Confirm',
     noActivity: 'No activity yet.', noResults: 'No papers found. Try increasing days_back.',
     paperAdded: 'Paper added to queue', importFailed: 'Import failed',
     configSaved: 'Configuration saved!', saveFailed: 'Save failed',
     searching: 'Searching PubMed...', noResultsShort: 'No results',
-    dryRunComplete: 'Dry run complete', dryRunFailed: 'Dry run failed',
-    sent: 'Sent!', papersDelivered: 'papers delivered',
-    testSent: 'Test email sent!', searchFailed: 'Search failed',
+    publishSuccess: 'Published!', searchFailed: 'Search failed',
     dashboardFailed: 'Dashboard load failed', loadFailed: 'Load failed',
     paperRemoved: 'Paper removed', queueCleared: 'Queue cleared',
-    clearFailed: 'Clear failed', manualSent: 'Manual papers sent!',
+    clearFailed: 'Clear failed', manualSent: 'Manual papers published!',
+    papersDelivered: 'papers published on homepage',
     other: 'Other', paperTitlePlaceholder: 'Paper title',
     authorsPlaceholder: 'Author1, Author2', journalPlaceholder: 'Journal name',
     abstractPlaceholder: 'Paper abstract...',
@@ -487,51 +492,50 @@ const LANG = {
   zh: {
     brand: '心理学文献日报',
     sidebarFooter: 'v1.0 \u00b7 英文版',
-    navDashboard: '仪表盘', navSearch: '搜索与发送', navConfig: '配置',
-    navHistory: '发送历史', navImport: '手动导入', navAbout: '关于',
+    navDashboard: '仪表盘', navSearch: '搜索与发布', navConfig: '配置',
+    navHistory: '发布历史', navImport: '手动导入', navAbout: '关于',
     systemReady: '系统就绪', runNow: '立即运行',
-    statToday: '今日发送', lastSend: '上次发送：--',
+    statToday: '今日发布', lastSend: '上次发布：--',
     statWeek: '近7天总计', statWeekSub: '\u2191 本周 +10',
     statTopics: '已配置主题', statTopicsSub: '活跃子领域',
     statSched: '定时任务', statSchedSub: '每日自动',
     recentActivity: '近期动态', today: '今天',
     topicBreakdown: '主题分布', papersToday: '篇今日文献',
     searchLit: '检索文献', daysBack: '回溯天数', maxPapers: '最大篇数',
-    search: '检索', dryRun: '预览', sendEmail: '发送邮件', sendTest: '发送测试',
-    searchResults: '检索结果', sendAll: '全部发送', clear: '清除',
-    smtpSettings: 'SMTP 设置', smtpHost: 'SMTP 服务器', port: '端口',
-    senderEmail: '发件邮箱', recipientEmail: '收件邮箱',
-    senderName: '发件人名称', authCode: '授权码',
-    searchSettings: '检索设置', maxPerEmail: '每封邮件最大篇数',
+    search: '检索', publishNow: '发布到首页',
+    searchResults: '检索结果', publishAll: '全部发布', clear: '清除',
+    publishSettings: '发布设置',
+    publishInfo: '文献发布到公开首页。使用上方"搜索与发布"功能更新。',
+    senderName: '首页标题',
+    searchSettings: '检索设置', maxPerEmail: '最大篇数',
     dataSources: '数据源', topics: '主题', addTopic: '添加主题',
     edit: '编辑', delete: '删除', saveConfig: '保存配置',
-    sentPapers: '已发送文献（近90天）',
-    thTitle: '标题', thDoi: 'DOI/标识', thSent: '发送时间',
+    sentPapers: '已发布文献（近90天）',
+    thTitle: '标题', thDoi: 'DOI/标识', thSent: '发布时间',
     importManual: '手动导入文献', titleReq: '标题 *',
     authors: '作者', journal: '期刊', date: '日期', topic: '主题',
     abstract: '摘要', addToQueue: '加入队列',
     manualQueue: '手动队列', noManual: '暂无手动添加的文献。',
-    sendQueue: '发送队列',
+    publishQueue: '发布队列',
     aboutTitle: '关于 PsychLit Daily',
-    aboutDesc1: 'PsychLit Daily 是一个自动化心理学文献追踪与邮件推送系统。它按配置的子领域检索 PubMed（可选补充 Crossref、Semantic Scholar），与发送历史去重后生成含完整摘要和链接的 HTML 摘要邮件，通过 QQ 邮箱 SMTP 推送。',
+    aboutDesc1: 'PsychLit Daily 是一个自动化心理学文献追踪系统。它按配置的子领域检索 PubMed（可选补充 Crossref、Semantic Scholar），与发布历史去重后生成含完整摘要和链接的 HTML 摘要页面，发布到公开首页。',
     version: '版本', versionNum: '1.0（英文版）', scripts: '脚本',
     cancel: '取消', confirm: '确认',
     noActivity: '暂无活动。', noResults: '未找到文献，请尝试增大回溯天数。',
     paperAdded: '文献已加入队列', importFailed: '导入失败',
     configSaved: '配置已保存！', saveFailed: '保存失败',
     searching: '正在检索 PubMed...', noResultsShort: '无结果',
-    dryRunComplete: '预览完成', dryRunFailed: '预览失败',
-    sent: '已发送！', papersDelivered: '篇文献已送达',
-    testSent: '测试邮件已发送！', searchFailed: '检索失败',
+    publishSuccess: '已发布！', searchFailed: '检索失败',
     dashboardFailed: '仪表盘加载失败', loadFailed: '加载失败',
     paperRemoved: '文献已移除', queueCleared: '队列已清空',
-    clearFailed: '清空失败', manualSent: '手动文献已发送！',
+    clearFailed: '清空失败', manualSent: '手动文献已发布！',
+    papersDelivered: '篇文献已发布到首页',
     other: '其他', paperTitlePlaceholder: '论文标题',
     authorsPlaceholder: '作者1, 作者2', journalPlaceholder: '期刊名称',
     abstractPlaceholder: '论文摘要...',
     fullText: '全文',
     abstractUnavailable: '摘要暂缺',
-    lastSendPrefix: '上次发送',
+    lastSendPrefix: '上次发布',
   }
 };
 
@@ -555,3 +559,169 @@ function setLanguage(lang) {
 function toggleLang() {
   setLanguage(currentLang === 'en' ? 'zh' : 'en');
 }
+
+// === App State ===
+let pageTitleKey = 'Dashboard';
+let lastResultCount = 0;
+let searchResults = [];
+
+// === Navigation ===
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', function() {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    this.classList.add('active');
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const page = document.getElementById('page-' + this.dataset.page);
+    if (page) page.classList.add('active');
+    pageTitleKey = this.querySelector('[data-i18n]')?.dataset?.i18n?.replace('nav','') || 'Dashboard';
+    document.getElementById('pageTitle').textContent = t(pageTitleKey) || this.querySelector('[data-i18n]')?.textContent || 'Dashboard';
+    document.getElementById('titleTag').textContent = 'PsychLit Daily \u2014 ' + (t(pageTitleKey) || 'Dashboard');
+  });
+});
+
+// === Modal ===
+function showModal(title, body, onConfirm) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').textContent = body;
+  document.getElementById('modal').classList.add('show');
+  const btn = document.getElementById('modalConfirmBtn');
+  const newBtn = btn.cloneNode(true);
+  btn.parentNode.replaceChild(newBtn, btn);
+  newBtn.addEventListener('click', function() { closeModal(); if (onConfirm) onConfirm(); });
+}
+function closeModal() { document.getElementById('modal').classList.remove('show'); }
+
+// === Toast ===
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast ' + (type || '') + ' show';
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+// === API Helper ===
+async function api(url, body) {
+  const res = await fetch(url, { method: body ? 'POST' : 'GET', headers: body ? {'Content-Type':'application/json'} : {}, body: body ? JSON.stringify(body) : undefined });
+  return res.json();
+}
+
+// === Dashboard ===
+async function loadDashboard() {
+  try {
+    const d = await api('/api/status');
+    document.getElementById('statToday').textContent = d.papers_today;
+    document.getElementById('statWeek').textContent = d.papers_week;
+    document.getElementById('statTopics').textContent = d.topics_count;
+    document.getElementById('statTodaySub').textContent = d.last_send ? (t('lastSendPrefix') + ': ' + new Date(d.last_send).toLocaleString()) : t('lastSend');
+    const act = await api('/api/activity');
+    const feed = document.getElementById('activityFeed');
+    if (act.length === 0) { feed.innerHTML = '<div class="empty-state"><p>' + t('noActivity') + '</p></div>'; }
+    else { feed.innerHTML = act.map(a => '<div class="activity-item"><strong>' + (a.title || '?').substring(0,80) + '</strong><span class="time">' + new Date(a.sent_at).toLocaleString() + '</span></div>').join(''); }
+  } catch(e) { showToast(t('dashboardFailed'), 'error'); }
+}
+
+// === Search ===
+async function doSearch() {
+  const days = parseInt(document.getElementById('searchDays').value) || 1;
+  const max = parseInt(document.getElementById('searchMax').value) || 10;
+  showToast(t('searching'), 'info');
+  try {
+    const res = await api('/api/search', { days_back: days, max_papers: max });
+    searchResults = res.papers || [];
+    const card = document.getElementById('resultsCard');
+    const list = document.getElementById('resultsList');
+    lastResultCount = searchResults.length;
+    document.getElementById('resultCount').textContent = lastResultCount + ' papers' + (res.total_raw ? ' (' + res.total_raw + ' raw)' : '');
+    if (searchResults.length === 0) { list.innerHTML = '<div class="empty-state"><p>' + t('noResults') + '</p></div>'; }
+    else {
+      list.innerHTML = searchResults.map((p,i) =>
+        '<div class="paper-item"><div class="paper-topic">' + (p.topic||'') + (p.is_oa ? ' <span style="color:#2ec27e;font-size:11px;">OA</span>' : '') + '</div>' +
+        '<div class="paper-title"><a href="' + (p.fulltext_url||p.url||'#') + '" target="_blank">' + (i+1) + '. ' + (p.title||'') + '</a></div>' +
+        '<div class="paper-meta">' + (p.authors||'') + ' &middot; ' + (p.journal||'') + ' &middot; ' + (p.date||'') + '</div>' +
+        '<div class="paper-abstract">' + (p.abstract||t('abstractUnavailable')) + '</div></div>'
+      ).join('');
+    }
+    card.style.display = 'block';
+  } catch(e) { showToast(t('searchFailed'), 'error'); }
+}
+
+// === Publish ===
+async function doPublish() {
+  const days = parseInt(document.getElementById('searchDays').value) || 1;
+  const max = parseInt(document.getElementById('searchMax').value) || 10;
+  showToast('Publishing...', 'info');
+  try {
+    const res = await api('/api/publish', { days_back: days, max_papers: max });
+    showToast(res.papers_count + ' ' + t('papersDelivered'), 'success');
+    loadDashboard();
+  } catch(e) { showToast('Publish failed', 'error'); }
+}
+
+// === Manual Import ===
+async function importPaper() {
+  const title = document.getElementById('impTitle').value.trim();
+  if (!title) { showToast(t('importFailed'), 'error'); return; }
+  const paper = { title, authors: document.getElementById('impAuthors').value.trim(), journal: document.getElementById('impJournal').value.trim(), date: document.getElementById('impDate').value, doi: document.getElementById('impDoi').value.trim(), url: document.getElementById('impUrl').value.trim(), abstract: document.getElementById('impAbstract').value.trim(), topic: document.getElementById('impTopic').value };
+  try { await api('/api/import', paper); showToast(t('paperAdded'), 'success'); document.getElementById('impTitle').value = ''; loadManual(); }
+  catch(e) { showToast(t('importFailed'), 'error'); }
+}
+
+async function loadManual() {
+  try { const papers = await api('/api/import'); const list = document.getElementById('manualList'); document.getElementById('manualCount').textContent = papers.length + ' papers'; if (papers.length === 0) { list.innerHTML = '<div class="empty-state"><p>' + t('noManual') + '</p></div>'; } else { list.innerHTML = papers.map((p,i) => '<div class="paper-item"><div class="paper-title">' + (i+1) + '. ' + (p.title||'') + '</div><div class="paper-meta">' + (p.authors||'') + ' &middot; ' + (p.topic||'') + '</div></div>').join(''); } }
+  catch(e) { showToast(t('loadFailed'), 'error'); }
+}
+
+async function clearManual() {
+  showModal('Clear Queue', 'Remove all papers from manual queue?', async () => {
+    try { await api('/api/import', { index: -1 }); showToast(t('queueCleared'), 'success'); loadManual(); }
+    catch(e) { showToast(t('clearFailed'), 'error'); }
+  });
+}
+
+async function doSendManual() {
+  showToast('Publishing...', 'info');
+  try { const res = await api('/api/publish', { days_back: 1, max_papers: 50 }); showToast(res.papers_count + ' ' + t('papersDelivered'), 'success'); loadDashboard(); }
+  catch(e) { showToast('Publish failed', 'error'); }
+}
+
+// === History ===
+async function loadHistory() {
+  try { const h = await api('/api/history'); const list = document.getElementById('historyTable'); if (!list) return; if (h.length === 0) { list.innerHTML = '<tr><td colspan="3"><div class="empty-state"><p>No history yet.</p></div></td></tr>'; } else { list.innerHTML = h.slice().reverse().map(p => '<tr><td>' + (p.title||'').substring(0,60) + '</td><td>' + (p.key||'').substring(0,25) + '</td><td>' + (p.sent_at ? new Date(p.sent_at).toLocaleString() : '') + '</td></tr>').join(''); } }
+  catch(e) { showToast(t('loadFailed'), 'error'); }
+}
+
+// === Config ===
+async function loadConfig() {
+  try {
+    const c = await api('/api/config');
+    const elDays = document.getElementById('cfgDaysBack');
+    const elMax = document.getElementById('cfgMaxPapers');
+    if (elDays) elDays.value = c.search?.days_back || 1;
+    if (elMax) elMax.value = c.search?.max_papers || 10;
+  } catch(e) { showToast(t('loadFailed'), 'error'); }
+}
+
+async function saveConfig() {
+  const days = parseInt(document.getElementById('cfgDaysBack')?.value) || 1;
+  const max = parseInt(document.getElementById('cfgMaxPapers')?.value) || 10;
+  try { await api('/api/config', { search: { days_back: days, max_papers: max } }); showToast(t('configSaved'), 'success'); }
+  catch(e) { showToast(t('saveFailed'), 'error'); }
+}
+
+// === Run Now ===
+function runNow() { showToast('Task triggered via backend', 'info'); }
+
+// === History Page Nav ===
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', function() {
+    const page = this.dataset.page;
+    if (page === 'history') setTimeout(loadHistory, 100);
+    if (page === 'dashboard') setTimeout(loadDashboard, 100);
+    if (page === 'import') setTimeout(loadManual, 100);
+    if (page === 'config') setTimeout(loadConfig, 100);
+  });
+});
+
+// === Init ===
+setLanguage(currentLang);
+loadDashboard();
+
