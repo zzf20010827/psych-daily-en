@@ -273,12 +273,7 @@ tbody tr:hover { background:#f8f9fc; }
 
       <div class="card">
         <div class="card-header"><h3 data-i18n="topicBreakdown">Topic Breakdown</h3></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-          <div style="padding:14px;border-radius:8px;background:#e6f4ea;"><div style="font-size:12px;color:#2ec27e;font-weight:500;">Cognitive Neuroscience</div><div style="font-size:24px;font-weight:700;margin-top:2px;" id="topicCog">3</div><div style="font-size:11px;color:var(--text-secondary);" data-i18n="papersToday">papers today</div></div>
-          <div style="padding:14px;border-radius:8px;background:#fce8e6;"><div style="font-size:12px;color:#c01c28;font-weight:500;">Clinical Psychology</div><div style="font-size:24px;font-weight:700;margin-top:2px;" id="topicClin">3</div><div style="font-size:11px;color:var(--text-secondary);" data-i18n="papersToday">papers today</div></div>
-          <div style="padding:14px;border-radius:8px;background:#f3e8fd;"><div style="font-size:12px;color:#813d9c;font-weight:500;">Social Psychology</div><div style="font-size:24px;font-weight:700;margin-top:2px;" id="topicSoc">4</div><div style="font-size:11px;color:var(--text-secondary);" data-i18n="papersToday">papers today</div></div>
-          <div style="padding:14px;border-radius:8px;background:#fef3e6;"><div style="font-size:12px;color:#e5a50a;font-weight:500;">Developmental Psych</div><div style="font-size:24px;font-weight:700;margin-top:2px;" id="topicDev">0</div><div style="font-size:11px;color:var(--text-secondary);" data-i18n="papersToday">papers today</div></div>
-        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;" id="topicBreakdownGrid"></div>
       </div>
     </div>
 
@@ -332,12 +327,7 @@ tbody tr:hover { background:#f8f9fc; }
 
       <div class="card">
         <div class="card-header"><h3 data-i18n="topics">Topics</h3><button class="btn btn-sm" onclick="addTopic()">+ <span data-i18n="addTopic">Add Topic</span></button></div>
-        <div id="topicList">
-          <div class="topic-card"><div class="handle">&#9776;</div><div class="info"><div class="name">Cognitive Neuroscience</div><div class="query">(cognitive neuroscience[MeSH] OR "executive function") AND psychology</div></div><div class="actions"><button class="btn btn-sm" data-i18n="edit">Edit</button><button class="btn btn-sm btn-danger" data-i18n="delete">Delete</button></div></div>
-          <div class="topic-card"><div class="handle">&#9776;</div><div class="info"><div class="name">Clinical Psychology</div><div class="query">(clinical psychology[MeSH] OR psychotherapy[MeSH]) AND psychology</div></div><div class="actions"><button class="btn btn-sm" data-i18n="edit">Edit</button><button class="btn btn-sm btn-danger" data-i18n="delete">Delete</button></div></div>
-          <div class="topic-card"><div class="handle">&#9776;</div><div class="info"><div class="name">Social Psychology</div><div class="query">(social psychology[MeSH] OR "social cognition") AND psychology</div></div><div class="actions"><button class="btn btn-sm" data-i18n="edit">Edit</button><button class="btn btn-sm btn-danger" data-i18n="delete">Delete</button></div></div>
-          <div class="topic-card"><div class="handle">&#9776;</div><div class="info"><div class="name">Developmental Psychology</div><div class="query">(developmental psychology[MeSH] OR "child development") AND psychology</div></div><div class="actions"><button class="btn btn-sm" data-i18n="edit">Edit</button><button class="btn btn-sm btn-danger" data-i18n="delete">Delete</button></div></div>
-        </div>
+        <div id="topicList"></div>
       </div>
 
       <div style="display:flex;gap:8px;justify-content:flex-end;">
@@ -348,22 +338,11 @@ tbody tr:hover { background:#f8f9fc; }
     <!-- ======== PUBLISH HISTORY ======== -->
     <div class="page" id="page-history">
       <div class="card">
-        <div class="card-header"><h3 data-i18n="sentPapers">Published Papers (Last 90 Days)</h3><span class="badge" id="historyCount">10 papers</span></div>
+        <div class="card-header"><h3 data-i18n="sentPapers">Published Papers (Last 90 Days)</h3><span class="badge" id="historyCount">0 papers</span></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th data-i18n="thTitle">Title</th><th data-i18n="thDoi">DOI/Key</th><th data-i18n="thSent">Sent At</th></tr></thead>
-            <tbody id="historyTable">
-              <tr><td>Comparative profiles of anomalous self-experiences and social cognition in clinical high risk for psychosis and autism spectrum disorder.</td><td style="font-size:11px;color:var(--text-secondary);">doi:10.1016/j.scog.2026.100450</td><td style="white-space:nowrap;font-size:12px;">2026-06-20 18:22</td></tr>
-              <tr><td>Effects of Childhood Trauma on Executive Function, Impulsivity, Rumination and Worry: An Umbrella Review.</td><td style="font-size:11px;color:var(--text-secondary);">doi:10.1016/j.neubiorev.2026.106818</td><td style="white-space:nowrap;font-size:12px;">2026-06-20 18:22</td></tr>
-              <tr><td>Reflexive eye movement alterations are related to subclinical impulsive-compulsive behaviors in Parkinson's disease.</td><td style="font-size:11px;color:var(--text-secondary);">doi:10.1007/s10072-026-09177-z</td><td style="white-space:nowrap;font-size:12px;">2026-06-20 18:22</td></tr>
-              <tr><td>Effects of Acute Exercise on Cognitive Performance in Active Young Adults: A Randomized Trial Using Online Measures.</td><td style="font-size:11px;color:var(--text-secondary);">doi:10.1177/00315125261461628</td><td style="white-space:nowrap;font-size:12px;">2026-06-20 18:22</td></tr>
-              <tr><td>The effect of mindfulness-based stress reduction training on fear of childbirth...</td><td style="font-size:11px;color:var(--text-secondary);">doi:10.1007/s00737-026-01737-8</td><td style="white-space:nowrap;font-size:12px;">2026-06-20 18:22</td></tr>
-              <tr><td>'They're waiting for us to break before they listen': healthcare workers' perspectives...</td><td style="font-size:11px;color:var(--text-secondary);">doi:10.1017/s1463423626101352</td><td style="white-space:nowrap;font-size:12px;">2026-06-20 18:22</td></tr>
-              <tr><td>Primary Open-Angle Glaucoma With Improved Visual Outcomes Following Audio-Luminous Biofeedback Training...</td><td style="font-size:11px;color:var(--text-secondary);">doi:10.12659/ajcr.952147</td><td style="white-space:nowrap;font-size:12px;">2026-06-20 18:22</td></tr>
-              <tr><td>Health-related quality of life experiences in children with bladder exstrophy-epispadias complex...</td><td style="font-size:11px;color:var(--text-secondary);">doi:10.1007/s11136-026-04316-7</td><td style="white-space:nowrap;font-size:12px;">2026-06-20 18:22</td></tr>
-              <tr><td>Self-reported vaccine hesitancy and refusal among parents of children with autism...</td><td style="font-size:11px;color:var(--text-secondary);">doi:10.1007/s00431-026-07179-9</td><td style="white-space:nowrap;font-size:12px;">2026-06-20 18:22</td></tr>
-              <tr><td>Awareness of Effective Communication Skills Among Paediatric Dentists in Turkey.</td><td style="font-size:11px;color:var(--text-secondary);">doi:10.3290/j.ohpd.c_2680</td><td style="white-space:nowrap;font-size:12px;">2026-06-20 18:22</td></tr>
-            </tbody>
+            <thead><tr><th data-i18n="thTitle">Title</th><th data-i18n="thDoi">DOI/Key</th><th data-i18n="thSent">Published At</th></tr></thead>
+            <tbody id="historyTable"><tr><td colspan="3"><div class="empty-state"><p data-i18n="noHistory">No history yet.</p></div></td></tr></tbody>
           </table>
         </div>
       </div>
@@ -474,6 +453,7 @@ const LANG = {
     version: 'Version', versionNum: '1.0 (English Edition)', scripts: 'Scripts',
     cancel: 'Cancel', confirm: 'Confirm',
     noActivity: 'No activity yet.', noResults: 'No papers found. Try increasing days_back.',
+    noHistory: 'No history yet.',
     paperAdded: 'Paper added to queue', importFailed: 'Import failed',
     configSaved: 'Configuration saved!', saveFailed: 'Save failed',
     searching: 'Searching PubMed...', noResultsShort: 'No results',
@@ -522,6 +502,7 @@ const LANG = {
     version: '版本', versionNum: '1.0（英文版）', scripts: '脚本',
     cancel: '取消', confirm: '确认',
     noActivity: '暂无活动。', noResults: '未找到文献，请尝试增大回溯天数。',
+    noHistory: '暂无发布历史。',
     paperAdded: '文献已加入队列', importFailed: '导入失败',
     configSaved: '配置已保存！', saveFailed: '保存失败',
     searching: '正在检索 PubMed...', noResultsShort: '无结果',
@@ -552,8 +533,8 @@ function setLanguage(lang) {
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => el.placeholder = t(el.dataset.i18nPlaceholder));
   document.getElementById('langToggle').textContent = lang === 'en' ? '\u{1F310} \u4E2D' : '\u{1F310} EN';
   document.getElementById('pageTitle').textContent = t(pageTitleKey) || pageTitleKey;
-  document.getElementById('titleTag').textContent = 'PsychLit Daily \u2014 ' + t(pageTitleKey);
-  document.getElementById('resultCount').textContent = lastResultCount + ' ' + t('papers').toLowerCase();
+  document.getElementById('titleTag').textContent = 'PsychLit Daily \u2014 ' + (t(pageTitleKey) || 'Dashboard');
+  document.getElementById('resultCount').textContent = lastResultCount + ' papers';
 }
 
 function toggleLang() {
@@ -612,6 +593,17 @@ async function loadDashboard() {
     document.getElementById('statWeek').textContent = d.papers_week;
     document.getElementById('statTopics').textContent = d.topics_count;
     document.getElementById('statTodaySub').textContent = d.last_send ? (t('lastSendPrefix') + ': ' + new Date(d.last_send).toLocaleString()) : t('lastSend');
+    // topic breakdown
+    const grid = document.getElementById('topicBreakdownGrid');
+    if (grid && d.topic_breakdown) {
+      const colors = ['#e6f4ea','#fce8e6','#f3e8fd','#fef3e6','#e8f0fb','#f0f0f0'];
+      const labelColors = ['#2ec27e','#c01c28','#813d9c','#e5a50a','#1a5fb4','#666'];
+      let i = 0;
+      grid.innerHTML = Object.entries(d.topic_breakdown).map(([name, count]) => {
+        const ci = i++ % colors.length;
+        return '<div style="padding:14px;border-radius:8px;background:' + colors[ci] + ';"><div style="font-size:12px;color:' + labelColors[ci] + ';font-weight:500;">' + name + '</div><div style="font-size:24px;font-weight:700;margin-top:2px;">' + count + '</div><div style="font-size:11px;color:var(--text-secondary);">' + t('papersToday') + '</div></div>';
+      }).join('');
+    }
     const act = await api('/api/activity');
     const feed = document.getElementById('activityFeed');
     if (act.length === 0) { feed.innerHTML = '<div class="empty-state"><p>' + t('noActivity') + '</p></div>'; }
@@ -690,6 +682,8 @@ async function loadHistory() {
 }
 
 // === Config ===
+let topicData = [];
+
 async function loadConfig() {
   try {
     const c = await api('/api/config');
@@ -697,7 +691,59 @@ async function loadConfig() {
     const elMax = document.getElementById('cfgMaxPapers');
     if (elDays) elDays.value = c.search?.days_back || 1;
     if (elMax) elMax.value = c.search?.max_papers || 10;
+    if (c.topics) topicData = c.topics;
+    renderTopics();
   } catch(e) { showToast(t('loadFailed'), 'error'); }
+}
+
+function renderTopics() {
+  const list = document.getElementById('topicList');
+  if (!topicData.length) {
+    list.innerHTML = '<div class="empty-state"><p>No topics configured.</p></div>';
+    return;
+  }
+  list.innerHTML = topicData.map((t, i) =>
+    '<div class="topic-card"><div class="handle">&#9776;</div><div class="info"><div class="name">' + (t.name||'') + '</div><div class="query">' + (t.query||'') + '</div></div><div class="actions"><button class="btn btn-sm" onclick="editTopic(' + i + ')">' + t('edit') + '</button><button class="btn btn-sm btn-danger" onclick="deleteTopic(' + i + ')">' + t('delete') + '</button></div></div>'
+  ).join('');
+}
+
+function addTopic() {
+  showModal('Add Topic', 'Enter name:___AND___Enter query:', function() {
+    const name = prompt('Topic name:');
+    if (!name) return;
+    const query = prompt('PubMed query:');
+    if (!query) return;
+    topicData.push({name, query});
+    saveTopicConfig();
+  });
+}
+
+function editTopic(idx) {
+  const t = topicData[idx];
+  if (!t) return;
+  showModal('Edit Topic', 'Edit name and query:', function() {
+    const name = prompt('Topic name:', t.name);
+    if (!name) return;
+    const query = prompt('PubMed query:', t.query);
+    if (!query) return;
+    topicData[idx] = {name, query};
+    saveTopicConfig();
+  });
+}
+
+function deleteTopic(idx) {
+  showModal('Delete Topic', 'Remove "' + (topicData[idx]?.name||'') + '"?', function() {
+    topicData.splice(idx, 1);
+    saveTopicConfig();
+  });
+}
+
+async function saveTopicConfig() {
+  try {
+    await api('/api/config', { topics: topicData });
+    renderTopics();
+    showToast(t('configSaved'), 'success');
+  } catch(e) { showToast(t('saveFailed'), 'error'); }
 }
 
 async function saveConfig() {
@@ -707,17 +753,38 @@ async function saveConfig() {
   catch(e) { showToast(t('saveFailed'), 'error'); }
 }
 
-// === Run Now ===
-function runNow() { showToast('Task triggered via backend', 'info'); }
+// === History ===
+async function loadHistory() {
+  try {
+    const h = await api('/api/history');
+    const count = document.getElementById('historyCount');
+    if (count) count.textContent = h.length + ' papers';
+    const list = document.getElementById('historyTable');
+    if (!list) return;
+    if (h.length === 0) { list.innerHTML = '<tr><td colspan="3"><div class="empty-state"><p>' + t('noHistory') + '</p></div></td></tr>'; }
+    else { list.innerHTML = h.slice().reverse().map(p => '<tr><td>' + (p.title||'').substring(0,60) + '</td><td style="font-size:11px;color:var(--text-secondary);">' + (p.key||'').substring(0,25) + '</td><td style="white-space:nowrap;font-size:12px;">' + (p.sent_at ? new Date(p.sent_at).toLocaleString() : '') + '</td></tr>').join(''); }
+  } catch(e) { showToast(t('loadFailed'), 'error'); }
+}
 
-// === History Page Nav ===
+// === Run Now ===
+function runNow() {
+  const days = parseInt(document.getElementById('searchDays')?.value) || 1;
+  const max = parseInt(document.getElementById('searchMax')?.value) || 10;
+  showToast('Publishing...', 'info');
+  api('/api/publish', { days_back: days, max_papers: max }).then(res => {
+    showToast(res.papers_count + ' ' + t('papersDelivered'), 'success');
+    loadDashboard();
+  }).catch(() => showToast('Publish failed', 'error'));
+}
+
+// === Auto-load on nav ===
 document.querySelectorAll('.nav-item').forEach(item => {
   item.addEventListener('click', function() {
     const page = this.dataset.page;
-    if (page === 'history') setTimeout(loadHistory, 100);
-    if (page === 'dashboard') setTimeout(loadDashboard, 100);
-    if (page === 'import') setTimeout(loadManual, 100);
-    if (page === 'config') setTimeout(loadConfig, 100);
+    if (page === 'history') setTimeout(loadHistory, 150);
+    if (page === 'dashboard') setTimeout(loadDashboard, 150);
+    if (page === 'import') setTimeout(loadManual, 150);
+    if (page === 'config') setTimeout(loadConfig, 150);
   });
 });
 
