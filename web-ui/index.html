@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="titleTag">PsychLit Daily — Management Dashboard</title>
+<style>
+:root {
+  --primary: #1a5fb4;
+  --primary-dark: #0d4a8a;
+  --primary-light: #e8f0fb;
+  --accent: #2ec27e;
+  --accent-soft: #e6f4ea;
+  --warning: #e5a50a;
+  --danger: #c01c28;
+  --sidebar-bg: #1a1d23;
+  --sidebar-width: 240px;
+  --topbar-height: 56px;
+  --bg: #f5f6fa;
+  --card-bg: #fff;
+  --text: #1e1e2e;
+  --text-secondary: #6c6f85;
+  --border: #e2e4ec;
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 6px rgba(0,0,0,.04);
+  --font: -apple-system, 'Segoe UI', 'Inter', system-ui, sans-serif;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:var(--font); background:var(--bg); color:var(--text); display:flex; min-height:100vh; }
+
+/* === Sidebar === */
+.sidebar {
+  width:var(--sidebar-width); background:var(--sidebar-bg); color:#cdd0d8;
+  display:flex; flex-direction:column; position:fixed; inset:0 auto 0 0; z-index:100;
+}
+.sidebar .brand {
+  padding:18px 20px; border-bottom:1px solid rgba(255,255,255,.06); display:flex; align-items:center; gap:10px;
+}
+.sidebar .brand .logo {
+  width:32px; height:32px; border-radius:8px; background:var(--primary); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px;
+}
+.sidebar .brand span { font-weight:600; font-size:14px; color:#e8eaed; }
+.sidebar nav { flex:1; padding:12px 10px; }
+.nav-item {
+  display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px;
+  cursor:pointer; font-size:13.5px; color:#a0a4b0; transition:.15s; margin-bottom:2px;
+}
+.nav-item:hover { background:rgba(255,255,255,.06); color:#e8eaed; }
+.nav-item.active { background:rgba(26,95,180,.25); color:#7ab3f0; font-weight:500; }
+.nav-item .icon { width:20px; text-align:center; font-size:16px; }
+.sidebar .footer { padding:14px 20px; border-top:1px solid rgba(255,255,255,.06); font-size:11px; color:#6a6e7a; }
+
+/* === Main === */
+.main { margin-left:var(--sidebar-width); flex:1; min-height:100vh; }
+.topbar {
+  height:var(--topbar-height); background:var(--card-bg); border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between; padding:0 28px; position:sticky; top:0; z-index:50;
+}
+.topbar h2 { font-size:17px; font-weight:600; }
+.topbar .actions { display:flex; align-items:center; gap:12px; }
+.topbar .status-badge {
+  display:flex; align-items:center; gap:6px; font-size:12px; padding:5px 12px;
+  border-radius:20px; background:var(--accent-soft); color:#1a7a4a;
+}
+.topbar .status-badge .dot { width:7px; height:7px; border-radius:50%; background:var(--accent); }
+.lang-btn {
+  display:flex; align-items:center; gap:4px; font-size:12px; padding:4px 10px; border-radius:6px;
+  border:1px solid var(--border); cursor:pointer; background:var(--card-bg); color:var(--text-secondary); font-family:var(--font);
+}
+.lang-btn:hover { background:#f0f1f5; color:var(--text); }
+
+/* Content */
+.content { padding:24px 28px; }
+
+/* Cards */
+.card {
+  background:var(--card-bg); border-radius:var(--radius); box-shadow:var(--shadow);
+  padding:20px 24px; margin-bottom:20px; border:1px solid var(--border);
+}
+.card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.card-header h3 { font-size:15px; font-weight:600; }
+.card-header .badge { font-size:11px; padding:2px 10px; border-radius:12px; background:var(--primary-light); color:var(--primary); }
+
+/* Stats */
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:24px; }
+.stat-card {
+  background:var(--card-bg); border-radius:var(--radius); box-shadow:var(--shadow);
+  padding:18px 20px; border:1px solid var(--border);
+}
+.stat-card .label { font-size:12px; color:var(--text-secondary); margin-bottom:6px; text-transform:uppercase; letter-spacing:.3px; }
+.stat-card .value { font-size:28px; font-weight:700; }
+.stat-card .sub { font-size:12px; color:var(--text-secondary); margin-top:4px; }
+.stat-card .trend-up { color:var(--accent); }
+.stat-card .trend-down { color:var(--danger); }
+
+/* Table */
+.table-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+thead th { text-align:left; padding:10px 12px; color:var(--text-secondary); font-weight:500; border-bottom:2px solid var(--border); white-space:nowrap; }
+tbody td { padding:10px 12px; border-bottom:1px solid var(--border); vertical-align:top; }
+tbody tr:hover { background:#f8f9fc; }
+.topic-tag {
+  display:inline-block; font-size:11px; padding:2px 8px; border-radius:4px;
+  background:var(--primary-light); color:var(--primary); white-space:nowrap;
+}
+.topic-tag.clinical { background:#fce8e6; color:#c01c28; }
+.topic-tag.social { background:#f3e8fd; color:#813d9c; }
+.topic-tag.dev { background:#fef3e6; color:#e5a50a; }
+.topic-tag.cog { background:#e6f4ea; color:#2ec27e; }
+
+/* Forms */
+.form-group { margin-bottom:16px; }
+.form-group label { display:block; font-size:12px; font-weight:500; color:var(--text-secondary); margin-bottom:4px; }
+.form-group input, .form-group textarea, .form-group select {
+  width:100%; padding:8px 12px; font-size:13px; border:1px solid var(--border);
+  border-radius:6px; font-family:var(--font); background:var(--card-bg); color:var(--text); transition:.15s;
+}
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+  outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(26,95,180,.1);
+}
+.form-group textarea { resize:vertical; min-height:60px; font-size:12px; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+
+/* Buttons */
+.btn {
+  display:inline-flex; align-items:center; gap:6px; padding:8px 18px; font-size:13px;
+  font-weight:500; border-radius:6px; border:1px solid var(--border); cursor:pointer;
+  background:var(--card-bg); color:var(--text); transition:.15s; font-family:var(--font);
+}
+.btn:hover { background:#f0f1f5; }
+.btn-primary { background:var(--primary); color:#fff; border-color:var(--primary); }
+.btn-primary:hover { background:var(--primary-dark); }
+.btn-success { background:var(--accent); color:#fff; border-color:var(--accent); }
+.btn-success:hover { background:#219a60; }
+.btn-danger { background:var(--danger); color:#fff; border-color:var(--danger); }
+.btn-danger:hover { background:#9a1420; }
+.btn-sm { padding:5px 12px; font-size:12px; }
+
+/* Topic card */
+.topic-card {
+  background:#f8f9fc; border:1px solid var(--border); border-radius:8px; padding:14px 16px;
+  display:flex; align-items:center; gap:14px; margin-bottom:10px;
+}
+.topic-card .handle { cursor:grab; color:var(--text-secondary); }
+.topic-card .info { flex:1; }
+.topic-card .info .name { font-size:13px; font-weight:500; }
+.topic-card .info .query { font-size:11px; color:var(--text-secondary); margin-top:2px; font-family:'SF Mono','Fira Code',monospace; }
+.topic-card .actions { display:flex; gap:6px; }
+
+/* Paper card */
+.paper-card {
+  border:1px solid var(--border); border-radius:8px; padding:14px 16px; margin-bottom:12px;
+  background:var(--card-bg); transition:.15s;
+}
+.paper-card:hover { box-shadow:0 2px 8px rgba(0,0,0,.06); }
+.paper-card .meta { font-size:12px; color:var(--text-secondary); margin-top:4px; }
+.paper-card .title { font-size:14px; font-weight:500; color:var(--primary); text-decoration:none; }
+.paper-card .title:hover { text-decoration:underline; }
+.paper-card .abstract { font-size:12px; color:var(--text-secondary); margin-top:6px; line-height:1.5; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+
+/* Page */
+.page { display:none; }
+.page.active { display:block; }
+
+/* History */
+.history-item { display:flex; gap:14px; padding:10px 0; align-items:flex-start; }
+.history-item + .history-item { border-top:1px solid var(--border); }
+.history-item .time { font-size:12px; color:var(--text-secondary); white-space:nowrap; min-width:100px; }
+.history-item .info { flex:1; }
+.history-item .info .p { font-size:13px; }
+.history-item .info .s { font-size:11px; color:var(--text-secondary); }
+
+/* Empty */
+.empty-state { text-align:center; padding:40px 20px; color:var(--text-secondary); }
+.empty-state .icon { font-size:40px; margin-bottom:12px; opacity:.3; }
+.empty-state p { font-size:13px; }
+
+/* Responsive */
+@media (max-width:768px) {
+  .sidebar { width:60px; }
+  .sidebar .brand span, .sidebar nav .nav-item span, .sidebar .footer { display:none; }
+  .sidebar nav .nav-item { justify-content:center; padding:10px; }
+  .main { margin-left:60px; }
+  .content { padding:16px; }
+  .form-row { grid-template-columns:1fr; }
+  .stats-grid { grid-template-columns:1fr 1fr; }
+}
+
+/* Modal */
+.modal-overlay {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.3);
+  z-index:200; align-items:center; justify-content:center;
+}
+.modal-overlay.show { display:flex; }
+.modal-box { background:var(--card-bg); border-radius:var(--radius); width:90%; max-width:520px; padding:24px; box-shadow:0 20px 60px rgba(0,0,0,.2); }
+.modal-box h3 { margin-bottom:16px; font-size:16px; }
+.modal-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:20px; }
+
+/* Toast */
+.toast {
+  position:fixed; bottom:28px; right:28px; background:#323238; color:#fff;
+  padding:12px 20px; border-radius:8px; font-size:13px; box-shadow:0 4px 20px rgba(0,0,0,.2);
+  transform:translateY(80px); opacity:0; transition:.3s; z-index:300;
+}
+.toast.show { transform:translateY(0); opacity:1; }
+.toast.success { background:var(--accent); }
+.toast.error { background:var(--danger); }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="logo">PL</div>
+    <span data-i18n="brand">PsychLit Daily</span>
+  </div>
+  <nav>
+    <div class="nav-item active" data-page="dashboard"><span class="icon">&#9632;</span><span data-i18n="navDashboard">Dashboard</span></div>
+    <div class="nav-item" data-page="search"><span class="icon">&#9740;</span><span data-i18n="navSearch">Search &amp; Send</span></div>
+    <div class="nav-item" data-page="config"><span class="icon">&#9881;</span><span data-i18n="navConfig">Configuration</span></div>
+    <div class="nav-item" data-page="history"><span class="icon">&#9776;</span><span data-i18n="navHistory">Send History</span></div>
+    <div class="nav-item" data-page="import"><span class="icon">&#43;</span><span data-i18n="navImport">Manual Import</span></div>
+    <div class="nav-item" data-page="about"><span class="icon">&#9432;</span><span data-i18n="navAbout">About</span></div>
+  </nav>
+  <div class="footer" data-i18n="sidebarFooter">v1.0 · English Edition</div>
+</aside>
+
+<!-- Main -->
+<div class="main">
+  <div class="topbar">
+    <h2 id="pageTitle">Dashboard</h2>
+    <div class="actions">
+      <span class="status-badge"><span class="dot"></span><span data-i18n="systemReady">System Ready</span></span>
+      <button class="lang-btn" onclick="toggleLang()" id="langToggle">&#127760; 中</button>
+      <button class="btn btn-primary btn-sm" onclick="runNow()">&#9654; <span data-i18n="runNow">Run Now</span></button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ======== DASHBOARD ======== -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="label" data-i18n="statToday">Papers Sent Today</div><div class="value" id="statToday">0</div><div class="sub" id="statTodaySub" data-i18n="lastSend">Last send: --</div></div>
+        <div class="stat-card"><div class="label" data-i18n="statWeek">Total Sent (7d)</div><div class="value" id="statWeek">10</div><div class="sub trend-up" data-i18n="statWeekSub">&#8593; +10 this week</div></div>
+        <div class="stat-card"><div class="label" data-i18n="statTopics">Topics Configured</div><div class="value" id="statTopics">4</div><div class="sub" data-i18n="statTopicsSub">Active subdomains</div></div>
+        <div class="stat-card"><div class="label" data-i18n="statSched">Scheduled Task</div><div class="value" id="statSched">8:00 AM</div><div class="sub" data-i18n="statSchedSub">Daily automatic</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3 data-i18n="recentActivity">Recent Activity</h3><span class="badge" data-i18n="today">Today</span></div>
+        <div id="activityFeed"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3 data-i18n="topicBreakdown">Topic Breakdown</h3></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="padding:14px;border-radius:8px;background:#e6f4ea;"><div style="font-size:12px;color:#2ec27e;font-weight:500;">Cognitive Neuroscience</div><div style="font-size:24px;font-weight:700;margin-top:2px;" id="topicCog">3</div><div style="font-size:11px;color:var(--text-secondary);" data-i18n="papersToday">papers today</div></div>
+          <div style="padding:14px;border-radius:8px;background:#fce8e6;"><div style="font-size:12px;color:#c01c28;font-weight:500;">Clinical Psychology</div><div style="font-size:24px;font-weight:700;margin-top:2px;" id="topicClin">3</div><div style="font-size:11px;color:var(--text-secondary);" data-i18n="papersToday">papers today</div></div>
+          <div style="padding:14px;border-radius:8px;background:#f3e8fd;"><div style="font-size:12px;color:#813d9c;font-weight:500;">Social Psychology</div><div style="font-size:24px;font-weight:700;margin-top:2px;" id="topicSoc">4</div><div style="font-size:11px;color:var(--text-secondary);" data-i18n="papersToday">papers today</div></div>
+          <div style="padding:14px;border-radius:8px;background:#fef3e6;"><div style="font-size:12px;color:#e5a50a;font-weight:500;">Developmental Psych</div><div style="font-size:24px;font-weight:700;margin-top:2px;" id="topicDev">0</div><div style="font-size:11px;color:var(--text-secondary);" data-i18n="papersToday">papers today</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======== SEARCH & SEND ======== -->
+    <div class="page" id="page-search">
+      <div class="card">
+        <div class="card-header"><h3 data-i18n="searchLit">Search Literature</h3></div>
+        <div class="form-row">
+          <div class="form-group"><label data-i18n="daysBack">Days Back</label><input type="number" id="searchDays" value="1" min="1" max="30"></div>
+          <div class="form-group"><label data-i18n="maxPapers">Max Papers</label><input type="number" id="searchMax" value="10" min="1" max="50"></div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="doSearch()">&#9740; <span data-i18n="search">Search</span></button>
+          <button class="btn" onclick="doDryRun()">&#128269; <span data-i18n="dryRun">Dry Run</span></button>
+          <button class="btn btn-success" onclick="doSend()">&#9993; <span data-i18n="sendEmail">Send Email</span></button>
+          <button class="btn btn-success" onclick="doTestSend()" style="border-color:var(--warning);color:#e5a50a;">&#9993; <span data-i18n="sendTest">Send Test</span></button>
+        </div>
+      </div>
+
+      <div class="card" id="resultsCard" style="display:none;">
+        <div class="card-header"><h3 data-i18n="searchResults">Search Results</h3><span class="badge" id="resultCount">0 papers</span></div>
+        <div id="resultsList"></div>
+        <div style="margin-top:12px;display:flex;gap:8px;">
+          <button class="btn btn-success" onclick="doSend()">&#9993; <span data-i18n="sendAll">Send All</span></button>
+          <button class="btn" onclick="document.getElementById('resultsCard').style.display='none'" data-i18n="clear">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======== CONFIGURATION ======== -->
+    <div class="page" id="page-config">
+      <div class="card">
+        <div class="card-header"><h3 data-i18n="smtpSettings">SMTP Settings</h3></div>
+        <div class="form-row">
+          <div class="form-group"><label data-i18n="smtpHost">SMTP Host</label><input value="smtp.qq.com" disabled></div>
+          <div class="form-group"><label data-i18n="port">Port</label><input value="465 (SSL)" disabled></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label data-i18n="senderEmail">Sender Email</label><input value="2135437119@qq.com" id="cfgSender"></div>
+          <div class="form-group"><label data-i18n="recipientEmail">Recipient Email</label><input value="2135437119@qq.com" id="cfgRecipient"></div>
+        </div>
+        <div class="form-group"><label data-i18n="senderName">Sender Display Name</label><input value="Psychology Literature Daily" id="cfgSenderName"></div>
+        <div class="form-group"><label data-i18n="authCode">Auth Code</label><input type="password" value="********" id="cfgAuthCode"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3 data-i18n="searchSettings">Search Settings</h3></div>
+        <div class="form-row">
+          <div class="form-group"><label data-i18n="daysBack">Days Back</label><input type="number" value="1" id="cfgDaysBack"></div>
+          <div class="form-group"><label data-i18n="maxPerEmail">Max Papers per Email</label><input type="number" value="10" id="cfgMaxPapers"></div>
+        </div>
+        <div class="form-group">
+          <label data-i18n="dataSources">Data Sources</label>
+          <div style="display:flex;gap:16px;margin-top:4px;">
+            <label style="display:flex;align-items:center;gap:4px;font-size:13px;"><input type="checkbox" checked disabled> PubMed</label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:13px;"><input type="checkbox" id="cfgCrossref"> Crossref</label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:13px;"><input type="checkbox" id="cfgSemScholar"> Semantic Scholar</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3 data-i18n="topics">Topics</h3><button class="btn btn-sm" onclick="addTopic()">+ <span data-i18n="addTopic">Add Topic</span></button></div>
+        <div id="topicList">
+          <div class="topic-card"><div class="handle">&#9776;</div><div class="info"><div class="name">Cognitive Neuroscience</div><div class="query">(cognitive neuroscience[MeSH] OR "executive function") AND psychology</div></div><div class="actions"><button class="btn btn-sm" data-i18n="edit">Edit</button><button class="btn btn-sm btn-danger" data-i18n="delete">Delete</button></div></div>
+          <div class="topic-card"><div class="handle">&#9776;</div><div class="info"><div class="name">Clinical Psychology</div><div class="query">(clinical psychology[MeSH] OR psychotherapy[MeSH]) AND psychology</div></div><div class="actions"><button class="btn btn-sm" data-i18n="edit">Edit</button><button class="btn btn-sm btn-danger" data-i18n="delete">Delete</button></div></div>
+          <div class="topic-card"><div class="handle">&#9776;</div><div class="info"><div class="name">Social Psychology</div><div class="query">(social psychology[MeSH] OR "social cognition") AND psychology</div></div><div class="actions"><button class="btn btn-sm" data-i18n="edit">Edit</button><button class="btn btn-sm btn-danger" data-i18n="delete">Delete</button></div></div>
+          <div class="topic-card"><div class="handle">&#9776;</div><div class="info"><div class="name">Developmental Psychology</div><div class="query">(developmental psychology[MeSH] OR "child development") AND psychology</div></div><div class="actions"><button class="btn btn-sm" data-i18n="edit">Edit</button><button class="btn btn-sm btn-danger" data-i18n="delete">Delete</button></div></div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button class="btn btn-primary" onclick="saveConfig()" data-i18n="saveConfig">Save Configuration</button>
+      </div>
+    </div>
+
+    <!-- ======== SEND HISTORY ======== -->
+    <div class="page" id="page-history">
+      <div class="card">
+        <div class="card-header"><h3 data-i18n="sentPapers">Sent Papers (Last 90 Days)</h3><span class="badge" id="historyCount">10 papers</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th data-i18n="thTitle">Title</th><th data-i18n="thDoi">DOI/Key</th><th data-i18n="thSent">Sent At</th></tr></thead>
+            <tbody id="historyTable">
+              <tr><td>Comparative profiles of anomalous self-experiences and social cognition in clinical high risk for psychosis and autism spectrum disorder.</td><td style="font-size:11px;color:var(--text-secondary);">doi:10.1016/j.scog.2026.100450</td><td style="white-space:nowrap;font-size:12px;">2026-06-20 18:22</td></tr>
+              <tr><td>Effects of Childhood Trauma on Executive Function, Impulsivity, Rumination and Worry: An Umbrella Review.</td><td style="font-size:11px;color:var(--text-secondary);">doi:10.1016/j.neubiorev.2026.106818</td><td style="white-space:nowrap;font-size:12px;">2026-06-20 18:22</td></tr>
+              <tr><td>Reflexive eye movement alterations are related to subclinical impulsive-compulsive behaviors in Parkinson's disease.</td><td style="font-size:11px;color:var(--text-secondary);">doi:10.1007/s10072-026-09177-z</td><td style="white-space:nowrap;font-size:12px;">2026-06-20 18:22</td></tr>
+              <tr><td>Effects of Acute Exercise on Cognitive Performance in Active Young Adults: A Randomized Trial Using Online Measures.</td><td style="font-size:11px;color:var(--text-secondary);">doi:10.1177/00315125261461628</td><td style="white-space:nowrap;font-size:12px;">2026-06-20 18:22</td></tr>
+              <tr><td>The effect of mindfulness-based stress reduction training on fear of childbirth...</td><td style="font-size:11px;color:var(--text-secondary);">doi:10.1007/s00737-026-01737-8</td><td style="white-space:nowrap;font-size:12px;">2026-06-20 18:22</td></tr>
+              <tr><td>'They're waiting for us to break before they listen': healthcare workers' perspectives...</td><td style="font-size:11px;color:var(--text-secondary);">doi:10.1017/s1463423626101352</td><td style="white-space:nowrap;font-size:12px;">2026-06-20 18:22</td></tr>
+              <tr><td>Primary Open-Angle Glaucoma With Improved Visual Outcomes Following Audio-Luminous Biofeedback Training...</td><td style="font-size:11px;color:var(--text-secondary);">doi:10.12659/ajcr.952147</td><td style="white-space:nowrap;font-size:12px;">2026-06-20 18:22</td></tr>
+              <tr><td>Health-related quality of life experiences in children with bladder exstrophy-epispadias complex...</td><td style="font-size:11px;color:var(--text-secondary);">doi:10.1007/s11136-026-04316-7</td><td style="white-space:nowrap;font-size:12px;">2026-06-20 18:22</td></tr>
+              <tr><td>Self-reported vaccine hesitancy and refusal among parents of children with autism...</td><td style="font-size:11px;color:var(--text-secondary);">doi:10.1007/s00431-026-07179-9</td><td style="white-space:nowrap;font-size:12px;">2026-06-20 18:22</td></tr>
+              <tr><td>Awareness of Effective Communication Skills Among Paediatric Dentists in Turkey.</td><td style="font-size:11px;color:var(--text-secondary);">doi:10.3290/j.ohpd.c_2680</td><td style="white-space:nowrap;font-size:12px;">2026-06-20 18:22</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======== MANUAL IMPORT ======== -->
+    <div class="page" id="page-import">
+      <div class="card">
+        <div class="card-header"><h3 data-i18n="importManual">Import Paper Manually</h3></div>
+        <div class="form-row">
+          <div class="form-group"><label data-i18n="titleReq">Title *</label><input id="impTitle" data-i18n-placeholder="paperTitlePlaceholder" placeholder="Paper title"></div>
+          <div class="form-group"><label data-i18n="authors">Authors</label><input id="impAuthors" data-i18n-placeholder="authorsPlaceholder" placeholder="Author1, Author2"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label data-i18n="journal">Journal</label><input id="impJournal" data-i18n-placeholder="journalPlaceholder" placeholder="Journal name"></div>
+          <div class="form-group"><label data-i18n="date">Date</label><input id="impDate" type="date"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>DOI</label><input id="impDoi" placeholder="10.xxxx/xxxxx"></div>
+          <div class="form-group"><label data-i18n="topic">Topic</label>
+            <select id="impTopic"><option>Cognitive Neuroscience</option><option>Clinical Psychology</option><option>Social Psychology</option><option>Developmental Psychology</option><option data-i18n="other">Other</option></select>
+          </div>
+        </div>
+        <div class="form-group"><label>URL</label><input id="impUrl" placeholder="https://..."></div>
+        <div class="form-group"><label data-i18n="abstract">Abstract</label><textarea id="impAbstract" rows="4" data-i18n-placeholder="abstractPlaceholder" placeholder="Paper abstract..."></textarea></div>
+        <button class="btn btn-primary" onclick="importPaper()">+ <span data-i18n="addToQueue">Add to Queue</span></button>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3 data-i18n="manualQueue">Manual Queue</h3><span class="badge" id="manualCount">0 papers</span></div>
+        <div id="manualList"><div class="empty-state"><p data-i18n="noManual">No manually added papers.</p></div></div>
+        <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end;">
+          <button class="btn btn-success" onclick="doSendManual()">&#9993; <span data-i18n="sendQueue">Send Queue</span></button>
+          <button class="btn btn-danger" onclick="clearManual()" data-i18n="clear">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======== ABOUT ======== -->
+    <div class="page" id="page-about">
+      <div class="card">
+        <div class="card-header"><h3 data-i18n="aboutTitle">About PsychLit Daily</h3></div>
+        <p style="font-size:13px;line-height:1.7;color:var(--text-secondary);" data-i18n="aboutDesc1">
+          <strong>PsychLit Daily</strong> is an automated psychology literature tracking and email push system.
+          It searches PubMed and optional sources (Crossref, Semantic Scholar) across configured subdomains,
+          deduplicates against sent history, generates HTML digest emails with full abstracts and links,
+          and pushes them via QQ Mail SMTP.
+        </p>
+        <div style="margin-top:16px;font-size:13px;line-height:2;">
+          <div><strong data-i18n="version">Version:</strong> <span data-i18n="versionNum">1.0 (English Edition)</span></div>
+          <div><strong data-i18n="dataSources">Data Sources:</strong> PubMed, Crossref, Semantic Scholar</div>
+          <div><strong>Email:</strong> QQ Mail SMTP (smtp.qq.com:465)</div>
+          <div><strong data-i18n="scripts">Scripts:</strong> <code>run_daily.py</code>, <code>search_literature.py</code>, <code>format_digest.py</code>, <code>send_email.py</code></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <h3 id="modalTitle">Confirm</h3>
+    <p id="modalBody" style="font-size:13px;color:var(--text-secondary);"></p>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()" data-i18n="cancel">Cancel</button>
+      <button class="btn btn-primary" id="modalConfirmBtn" onclick="closeModal()"><span data-i18n="confirm">Confirm</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// === i18n Translations ===
+const LANG = {
+  en: {
+    brand: 'PsychLit Daily',
+    sidebarFooter: 'v1.0 \u00b7 English Edition',
+    navDashboard: 'Dashboard', navSearch: 'Search & Send', navConfig: 'Configuration',
+    navHistory: 'Send History', navImport: 'Manual Import', navAbout: 'About',
+    systemReady: 'System Ready', runNow: 'Run Now',
+    statToday: 'Papers Sent Today', lastSend: 'Last send: --',
+    statWeek: 'Total Sent (7d)', statWeekSub: '\u2191 +10 this week',
+    statTopics: 'Topics Configured', statTopicsSub: 'Active subdomains',
+    statSched: 'Scheduled Task', statSchedSub: 'Daily automatic',
+    recentActivity: 'Recent Activity', today: 'Today',
+    topicBreakdown: 'Topic Breakdown', papersToday: 'papers today',
+    searchLit: 'Search Literature', daysBack: 'Days Back', maxPapers: 'Max Papers',
+    search: 'Search', dryRun: 'Dry Run', sendEmail: 'Send Email', sendTest: 'Send Test',
+    searchResults: 'Search Results', sendAll: 'Send All', clear: 'Clear',
+    smtpSettings: 'SMTP Settings', smtpHost: 'SMTP Host', port: 'Port',
+    senderEmail: 'Sender Email', recipientEmail: 'Recipient Email',
+    senderName: 'Sender Display Name', authCode: 'Auth Code',
+    searchSettings: 'Search Settings', maxPerEmail: 'Max Papers per Email',
+    dataSources: 'Data Sources', topics: 'Topics', addTopic: 'Add Topic',
+    edit: 'Edit', delete: 'Delete', saveConfig: 'Save Configuration',
+    sentPapers: 'Sent Papers (Last 90 Days)',
+    thTitle: 'Title', thDoi: 'DOI/Key', thSent: 'Sent At',
+    importManual: 'Import Paper Manually', titleReq: 'Title *',
+    authors: 'Authors', journal: 'Journal', date: 'Date', topic: 'Topic',
+    abstract: 'Abstract', addToQueue: 'Add to Queue',
+    manualQueue: 'Manual Queue', noManual: 'No manually added papers.',
+    sendQueue: 'Send Queue',
+    aboutTitle: 'About PsychLit Daily',
+    aboutDesc1: 'PsychLit Daily is an automated psychology literature tracking and email push system. It searches PubMed and optional sources (Crossref, Semantic Scholar) across configured subdomains, deduplicates against sent history, generates HTML digest emails with full abstracts and links, and pushes them via QQ Mail SMTP.',
+    version: 'Version', versionNum: '1.0 (English Edition)', scripts: 'Scripts',
+    cancel: 'Cancel', confirm: 'Confirm',
+    noActivity: 'No activity yet.', noResults: 'No papers found. Try increasing days_back.',
+    paperAdded: 'Paper added to queue', importFailed: 'Import failed',
+    configSaved: 'Configuration saved!', saveFailed: 'Save failed',
+    searching: 'Searching PubMed...', noResultsShort: 'No results',
+    dryRunComplete: 'Dry run complete', dryRunFailed: 'Dry run failed',
+    sent: 'Sent!', papersDelivered: 'papers delivered',
+    testSent: 'Test email sent!', searchFailed: 'Search failed',
+    dashboardFailed: 'Dashboard load failed', loadFailed: 'Load failed',
+    paperRemoved: 'Paper removed', queueCleared: 'Queue cleared',
+    clearFailed: 'Clear failed', manualSent: 'Manual papers sent!',
+    other: 'Other', paperTitlePlaceholder: 'Paper title',
+    authorsPlaceholder: 'Author1, Author2', journalPlaceholder: 'Journal name',
+    abstractPlaceholder: 'Paper abstract...',
+    fullText: 'Full Text',
+    abstractUnavailable: 'Abstract unavailable',
+    lastSendPrefix: 'Last',
+  },
+  zh: {
+    brand: '心理学文献日报',
+    sidebarFooter: 'v1.0 \u00b7 英文版',
+    navDashboard: '仪表盘', navSearch: '搜索与发送', navConfig: '配置',
+    navHistory: '发送历史', navImport: '手动导入', navAbout: '关于',
+    systemReady: '系统就绪', runNow: '立即运行',
+    statToday: '今日发送', lastSend: '上次发送：--',
+    statWeek: '近7天总计', statWeekSub: '\u2191 本周 +10',
+    statTopics: '已配置主题', statTopicsSub: '活跃子领域',
+    statSched: '定时任务', statSchedSub: '每日自动',
+    recentActivity: '近期动态', today: '今天',
+    topicBreakdown: '主题分布', papersToday: '篇今日文献',
+    searchLit: '检索文献', daysBack: '回溯天数', maxPapers: '最大篇数',
+    search: '检索', dryRun: '预览', sendEmail: '发送邮件', sendTest: '发送测试',
+    searchResults: '检索结果', sendAll: '全部发送', clear: '清除',
+    smtpSettings: 'SMTP 设置', smtpHost: 'SMTP 服务器', port: '端口',
+    senderEmail: '发件邮箱', recipientEmail: '收件邮箱',
+    senderName: '发件人名称', authCode: '授权码',
+    searchSettings: '检索设置', maxPerEmail: '每封邮件最大篇数',
+    dataSources: '数据源', topics: '主题', addTopic: '添加主题',
+    edit: '编辑', delete: '删除', saveConfig: '保存配置',
+    sentPapers: '已发送文献（近90天）',
+    thTitle: '标题', thDoi: 'DOI/标识', thSent: '发送时间',
+    importManual: '手动导入文献', titleReq: '标题 *',
+    authors: '作者', journal: '期刊', date: '日期', topic: '主题',
+    abstract: '摘要', addToQueue: '加入队列',
+    manualQueue: '手动队列', noManual: '暂无手动添加的文献。',
+    sendQueue: '发送队列',
+    aboutTitle: '关于 PsychLit Daily',
+    aboutDesc1: 'PsychLit Daily 是一个自动化心理学文献追踪与邮件推送系统。它按配置的子领域检索 PubMed（可选补充 Crossref、Semantic Scholar），与发送历史去重后生成含完整摘要和链接的 HTML 摘要邮件，通过 QQ 邮箱 SMTP 推送。',
+    version: '版本', versionNum: '1.0（英文版）', scripts: '脚本',
+    cancel: '取消', confirm: '确认',
+    noActivity: '暂无活动。', noResults: '未找到文献，请尝试增大回溯天数。',
+    paperAdded: '文献已加入队列', importFailed: '导入失败',
+    configSaved: '配置已保存！', saveFailed: '保存失败',
+    searching: '正在检索 PubMed...', noResultsShort: '无结果',
+    dryRunComplete: '预览完成', dryRunFailed: '预览失败',
+    sent: '已发送！', papersDelivered: '篇文献已送达',
+    testSent: '测试邮件已发送！', searchFailed: '检索失败',
+    dashboardFailed: '仪表盘加载失败', loadFailed: '加载失败',
+    paperRemoved: '文献已移除', queueCleared: '队列已清空',
+    clearFailed: '清空失败', manualSent: '手动文献已发送！',
+    other: '其他', paperTitlePlaceholder: '论文标题',
+    authorsPlaceholder: '作者1, 作者2', journalPlaceholder: '期刊名称',
+    abstractPlaceholder: '论文摘要...',
+    fullText: '全文',
+    abstractUnavailable: '摘要暂缺',
+    lastSendPrefix: '上次发送',
+  }
+};
+
+let currentLang = localStorage.getItem('psychlit_lang') || 'en';
+
+function t(key) {
+  return (LANG[currentLang] && LANG[currentLang][key]) || (LANG.en[key] || key);
+}
+
+function setLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem('psychlit_lang', lang);
+  document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => el.placeholder = t(el.dataset.i18nPlaceholder));
+  document.getElementById('langToggle').textContent = lang === 'en' ? '\u{1F310} \u4E2D' : '\u{1F310} EN';
+  document.getElementById('pageTitle').textContent = t(pageTitleKey) || pageTitleKey;
+  document.getElementById('titleTag').textContent = 'PsychLit Daily \u2014 ' + t(pageTitleKey);
+  document.getElementById('resultCount').textContent = lastResultCount + ' ' + t('papers').toLowerCase();
+}
+
+function toggleLang() {
+  setLanguage(currentLang === 'en' ? 'zh' : 'en');
+}

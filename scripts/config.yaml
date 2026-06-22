@@ -1,0 +1,25 @@
+smtp:
+  sender: "2135437119@qq.com"
+  auth_code: ""
+  recipient: "2135437119@qq.com"
+  host: "smtp.qq.com"
+  port: 465
+email:
+  sender_name: "Psychology Literature Daily"
+search:
+  sources:
+  - pubmed
+  days_back: 1
+  max_papers: 10
+  abstract_max_chars: 300
+translate:
+  enabled: false
+topics:
+- name: Cognitive Neuroscience
+  query: '(cognitive neuroscience[MeSH] OR "executive function") AND psychology'
+- name: Clinical Psychology
+  query: '(clinical psychology[MeSH] OR psychotherapy[MeSH]) AND psychology'
+- name: Social Psychology
+  query: '(social psychology[MeSH] OR "social cognition") AND psychology'
+- name: Developmental Psychology
+  query: '(developmental psychology[MeSH] OR "child development") AND psychology'
