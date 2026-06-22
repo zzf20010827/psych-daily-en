@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 import time
 import xml.etree.ElementTree as ET
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Any
@@ -175,7 +176,6 @@ def search_pubmed(query: str, topic: str, days_back: int, retmax: int = 30) -> l
     id_list = search_resp.json().get("esearchresult", {}).get("idlist", [])
     if not id_list:
         return []
-    time.sleep(0.34)
     fetch_params = {"db": "pubmed", "id": ",".join(id_list), "retmode": "xml"}
     try:
         fetch_resp = _request_with_retry(f"{EUTILS_BASE}/efetch.fcgi", fetch_params, timeout=60)
@@ -339,23 +339,30 @@ def search_all(config: dict[str, Any]) -> tuple[list[Paper], SearchStats]:
     days_back = int(search_cfg.get("days_back", 1))
     max_papers = int(search_cfg.get("max_papers", 10))
     topics = config.get("topics", [])
-    all_papers: list[Paper] = []
     stats = SearchStats()
-    for topic_cfg in topics:
+
+    def _search_topic(topic_cfg: dict) -> tuple[str, list[Paper]]:
         name = topic_cfg.get("name", "Uncategorized")
         query = topic_cfg.get("query", "")
         if not query:
-            continue
-        topic_papers: list[Paper] = []
+            return name, []
+        papers: list[Paper] = []
         if "pubmed" in sources:
-            topic_papers.extend(search_pubmed(query, name, days_back))
+            papers.extend(search_pubmed(query, name, days_back))
         if "crossref" in sources:
-            topic_papers.extend(search_crossref(query, name, days_back))
+            papers.extend(search_crossref(query, name, days_back))
         if "semantic_scholar" in sources:
-            topic_papers.extend(search_semantic_scholar(query, name))
-        stats.topic_hits[name] = len(topic_papers)
-        all_papers.extend(topic_papers)
-        time.sleep(0.34)
+            papers.extend(search_semantic_scholar(query, name))
+        return name, papers
+
+    all_papers: list[Paper] = []
+    with ThreadPoolExecutor(max_workers=min(4, len(topics) or 1)) as pool:
+        futures = {pool.submit(_search_topic, tc): tc for tc in topics}
+        for fut in as_completed(futures):
+            name, topic_papers = fut.result()
+            stats.topic_hits[name] = len(topic_papers)
+            all_papers.extend(topic_papers)
+
     stats.total_raw = len(all_papers)
     all_papers = dedupe_papers(all_papers)
     all_papers = sort_papers(all_papers)[:max_papers]
