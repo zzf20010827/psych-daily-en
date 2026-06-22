@@ -252,6 +252,15 @@ def api_activity():
 def api_debug():
     cfg = _load_config()
     smtp = cfg.get("smtp", {})
+    import socket
+    net_ok = False
+    net_err = ""
+    try:
+        s = socket.create_connection(("smtp.qq.com", 465), timeout=5)
+        s.close()
+        net_ok = True
+    except Exception as e:
+        net_err = str(e)
     return jsonify({
         "has_sender": bool(smtp.get("sender")),
         "has_auth_code": bool(smtp.get("auth_code")),
@@ -261,6 +270,8 @@ def api_debug():
         "recipient_env": bool(os.environ.get("SMTP_RECIPIENT")),
         "sender_val": smtp.get("sender", ""),
         "auth_code_len": len(smtp.get("auth_code", "")),
+        "smtp_reachable": net_ok,
+        "smtp_error": net_err,
     })
 
 
